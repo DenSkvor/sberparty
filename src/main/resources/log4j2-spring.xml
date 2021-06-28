@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] [%15.15t] %-40.40c{1.}: %msg%n"/>
+
+        </Console>
+
+        <RollingFile name="RollingFile"
+                     fileName="./logs/sber-party-api.log"
+                     filePattern="./logs/$${date:yyyy-MM}/sber-part-api-%d{-dd-MMMM-yyyy}-%i.log.gz">
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss.SSS}[%-5level] [%15.15t] %-40.40c{1.}: %msg%n"/>
+            <Policies>
+                <!-- rollover on startup, daily and when the file reaches 10 MegaBytes -->
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy
+                        size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+
+        <Logger name="ru.sber.skvortsov.sberparty" level="debug"/>
+    </Loggers>
+
+</Configuration>

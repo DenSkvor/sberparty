@@ -1,0 +1,27 @@
+server:
+  port: 8189
+  servlet:
+    context-path: /sberparty/v1
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:sberparty_db;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+kafka:
+  bootstrapAddress: 10.53.222.63:9092
+  producer:
+    id: skvortsov
+  main-topic:
+      name: sber.party.api

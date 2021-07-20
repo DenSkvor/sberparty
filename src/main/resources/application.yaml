@@ -1,5 +1,5 @@
 server:
-  #port: 8189
+  port: 8189
   servlet:
     context-path: /sberparty/v1
 spring:
@@ -25,3 +25,12 @@ kafka:
     id: skvortsov
   main-topic:
       name: sber.party.api
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true

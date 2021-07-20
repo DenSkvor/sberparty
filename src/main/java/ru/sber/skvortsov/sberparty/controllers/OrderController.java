@@ -1,6 +1,10 @@
 package ru.sber.skvortsov.sberparty.controllers;
 
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.annotations.Operation;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,8 +12,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.sber.skvortsov.sberparty.dto.OrderDto;
 import ru.sber.skvortsov.sberparty.dto.OrderPostDto;
@@ -17,21 +19,20 @@ import ru.sber.skvortsov.sberparty.services.OrderService;
 import ru.sber.skvortsov.sberparty.utils.KafkaMessage;
 import ru.sber.skvortsov.sberparty.utils.KafkaMessageProducer;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 import static ru.sber.skvortsov.sberparty.utils.Endpoints.ORDER_ENDPOINT;
 
 @RestController
 @RequestMapping(ORDER_ENDPOINT)
-@AllArgsConstructor
 @Log4j2
+@AllArgsConstructor
 @Tag(name = "Заказы", description = "Работа с сущностью 'заказ': получение, создание, удаление")
 public class OrderController {
 
     private final OrderService orderService;
     private final KafkaMessageProducer kafkaMessageProducer;
-
-    private static final String controllerEndPoint = "fgfg";
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение заказа по id")

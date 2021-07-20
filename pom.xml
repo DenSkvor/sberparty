@@ -15,6 +15,9 @@
     <description>sber party api</description>
     <properties>
         <java.version>11</java.version>
+        <registry.url>registry.sigma.sbrf.ru</registry.url>
+        <base.image>${registry.url}/base/redhat/redhat-openjdk-18/openjdk18-openshift@sha256:06bbbf9272d5c5161f444388593e9bd8db793d8a2d95a50b429b3c0301fafcdd</base.image>
+        <deploy.path>${registry.url}/pprb-dev/ci02705305/ci02729426_pprb_payments_dev/</deploy.path>
     </properties>
     <dependencies>
         <dependency>
@@ -31,6 +34,24 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -104,7 +125,51 @@
                     </excludes>
                 </configuration>
             </plugin>
-        </plugins>
-    </build>
+            <!-- JIB config-->
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>2.8.0</version>
 
-</project>
+                        <configuration>
+                            <allowInsecureRegistries>true</allowInsecureRegistries>
+                            <from>
+                                <!-- ссылка на образ с которого формируем собственный -->
+                                <image>${base.image}</image>
+                            <auth>
+
+                            <!--<username>${nexus.username}</username>
+                            <password>${nexus.password}</password>-->
+                        </auth>
+                            </from>
+                            <!-- Формирование контейнера, где можно выбрать способ с mainСlass
+                        - основной класс приложения или папки/файла appRoot -->
+                            <container>
+                                <format>Docker</format>
+                                <!-- <ports>8080</ports> -->
+                                <mainClass>ru.sber.skvortsov.sberparty.SberpartyApplication</mainClass>
+                                <!-- <appRoot>/target/${project.artifactId}-${project.version}.jar</appRoot>-->
+                                <ports>8080</ports>
+                                <jvmFlags>
+                                    <!--  -Dspring.config.location=file:/deployments/config/application.yml,file:/deployments/config/ssl/ssl.yml,file:/deployments/config/secret/esb-config.yml,file:/deployments/config/secret/ups-config.yml-->
+                                </jvmFlags>
+                            </container>
+                            <to>
+                                <!-- репозиторий куда деплоить контейнер и именем проекта -->
+                                <image>${deploy.path}${project.artifactId}</image>
+                                <auth>
+                                    <!--<username>${nexus.user}</username>
+                                    <password>${nexus.password}</password>-->
+                              </auth>
+                                <!-- не изменяется, проставляет версию и тэг для образа -->
+                                <tags>
+                                    <tag>v1</tag>
+                                    <tag>${project.version}</tag>
+                                </tags>
+                            </to>
+                          </configuration>
+
+              </plugin>
+          </plugins>
+      </build>
+  </project>

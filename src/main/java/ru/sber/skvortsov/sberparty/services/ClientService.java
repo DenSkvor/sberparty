@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -31,12 +33,16 @@ public class ClientService {
         return mapList(clientRepository.findAll(), ClientDto.class, modelMapper);
     }
 
+    @Counted(value = "client.add.count", description = "Счетчик добавлений клиентов")
+    @Timed(value = "client.add.time", description = "Время, затраченное на добавление клиента")
     public ClientDto create(ClientDto clientDto){
         log.info("create(ClientDto clientDto)");
         clientDto.setId(null);
         return update(clientDto);
     }
 
+    @Counted(value = "client.upd.count", description = "Счетчик изменений клиентов")
+    @Timed(value = "client.upd.time", description = "Время, затраченное на изменение клиента")
     public ClientDto update(ClientDto clientDto){
         log.info("update(ClientDto clientDto)");
         return modelMapper.map(clientRepository.save(modelMapper.map(clientDto, Client.class)), ClientDto.class);

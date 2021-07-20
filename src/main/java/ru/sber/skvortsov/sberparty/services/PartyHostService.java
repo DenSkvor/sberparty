@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -32,12 +34,16 @@ public class PartyHostService {
         return mapList(partyHostRepository.findAll(), PartyHostDto.class, modelMapper);
     }
 
+    @Counted(value = "party.host.add.count", description = "Счетчик добавлений ведущих мероприятия")
+    @Timed(value = "party.host.add.time", description = "Время, затраченное на добавление ведущего мероприятия")
     public PartyHostPostPutDto create(PartyHostPostPutDto partyHostPostPutDto){
         log.info("create(PartyHostPostPutDto partyHostPostPutDto)");
         partyHostPostPutDto.setId(null);
         return modelMapper.map(partyHostRepository.save(modelMapper.map(partyHostPostPutDto, PartyHost.class)), PartyHostPostPutDto.class);
     }
 
+    @Counted(value = "party.host.upd.count", description = "Счетчик изменений ведущих мероприятия")
+    @Timed(value = "party.host.upd.time", description = "Время, затраченное на изменение ведущего мероприятия")
     public PartyHostPostPutDto update(PartyHostPostPutDto partyHostPostPutDto){
         log.info("update(PartyHostPostPutDto partyHostPostPutDto)");
         return modelMapper.map(partyHostRepository.save(modelMapper.map(partyHostPostPutDto, PartyHost.class)),PartyHostPostPutDto.class);

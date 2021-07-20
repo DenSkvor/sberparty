@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -31,12 +33,16 @@ public class DishTypeService {
         return mapList(dishTypeRepository.findAll(), DishTypeWithoutDishesDto.class, modelMapper);
     }
 
+    @Counted(value = "dish.type.add.count", description = "Счетчик добавлений типов блюд")
+    @Timed(value = "dish.type.add.time", description = "Время, затраченное на добавление типа блюда")
     public DishTypeWithoutDishesDto create(DishTypeWithoutDishesDto dishTypeWithoutDishesDto){
         log.info("create(DishTypeWithoutDishesDto dishTypeWithoutDishesDto)");
         dishTypeWithoutDishesDto.setId(null);
         return update(dishTypeWithoutDishesDto);
     }
 
+    @Counted(value = "dish.type.upd.count", description = "Счетчик изменений типов блюд")
+    @Timed(value = "dish.type.upd.time", description = "Время, затраченное на изменение типа блюда")
     public DishTypeWithoutDishesDto update(DishTypeWithoutDishesDto dishTypeWithoutDishesDto){
         log.info("update(DishTypeWithoutDishesDto dishTypeWithoutDishesDto)");
         return modelMapper.map(dishTypeRepository.save(modelMapper.map(dishTypeWithoutDishesDto, DishType.class)), DishTypeWithoutDishesDto.class);

@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -31,12 +33,16 @@ public class PartyTypeService {
         return mapList(partyTypeRepository.findAll(), PartyTypeWithoutBondsDto.class, modelMapper);
     }
 
+    @Counted(value = "party.type.add.count", description = "Счетчик добавлений типов мероприятий")
+    @Timed(value = "party.type.add.time", description = "Время, затраченное на добавление типа мероприятия")
     public PartyTypeWithoutBondsDto create(PartyTypeWithoutBondsDto partyTypeWithoutBondsDto){
         log.info("create(PartyTypeWithoutBondsDto partyTypeWithoutBondsDto)");
         partyTypeWithoutBondsDto.setId(null);
         return update(partyTypeWithoutBondsDto);
     }
 
+    @Counted(value = "party.type.upd.count", description = "Счетчик изменений типов мероприятий")
+    @Timed(value = "party.type.upd.time", description = "Время, затраченное на изменение типа мероприятия")
     public PartyTypeWithoutBondsDto update(PartyTypeWithoutBondsDto partyTypeWithoutBondsDto){
         log.info("create(PartyTypeWithoutBondsDto partyTypeWithoutBondsDto)");
         return modelMapper.map(partyTypeRepository.save(modelMapper.map(partyTypeWithoutBondsDto, PartyType.class)), PartyTypeWithoutBondsDto.class);

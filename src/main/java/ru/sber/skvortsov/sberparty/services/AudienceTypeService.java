@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -32,12 +34,16 @@ public class AudienceTypeService {
         return mapList(audienceTypeRepository.findAll(), AudienceTypeWithoutBondsDto.class, modelMapper);
     }
 
+    @Counted(value = "audience.type.add.count", description = "Счетчик добавлений типов публики")
+    @Timed(value = "audience.type.add.time", description = "Время, затраченное на добавление типа публики")
     public AudienceTypeWithoutBondsDto create(AudienceTypeWithoutBondsDto audienceTypeWithoutBondsDto){
         log.info("create(AudienceTypeWithoutBondsDto audienceTypeWithoutBondsDto)");
         audienceTypeWithoutBondsDto.setId(null);
         return update(audienceTypeWithoutBondsDto);
     }
 
+    @Counted(value = "audience.type.upd.count", description = "Счетчик изменений типов публики")
+    @Timed(value = "audience.type.upd.time", description = "Время, затраченное на изменение типа публики")
     public AudienceTypeWithoutBondsDto update(AudienceTypeWithoutBondsDto audienceTypeWithoutBondsDto){
         log.info("update(AudienceTypeWithoutBondsDto audienceTypeWithoutBondsDto)");
         return modelMapper.map(audienceTypeRepository.save(modelMapper.map(audienceTypeWithoutBondsDto, AudienceType.class)), AudienceTypeWithoutBondsDto.class);

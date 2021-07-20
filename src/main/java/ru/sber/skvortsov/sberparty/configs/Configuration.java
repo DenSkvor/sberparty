@@ -1,6 +1,9 @@
 package ru.sber.skvortsov.sberparty.configs;
 
 
+import io.micrometer.core.aop.CountedAspect;
+import io.micrometer.core.aop.TimedAspect;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
@@ -50,15 +53,9 @@ public class Configuration {
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(
-                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
-                bootstrapAddress);
-        configProps.put(
-                ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
-        configProps.put(
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-                StringSerializer.class);
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.CLIENT_ID_CONFIG, producerId);
         return new DefaultKafkaProducerFactory<>(configProps);
     }
@@ -76,11 +73,24 @@ public class Configuration {
                 .info(new Info()
                         .title("Sber.Party Api")
                         .version("1.0.0")
+                        .description("Конструктор праздничных мероприятий. Соберий свой праздник!")
                         .contact(new Contact()
                                 .email("dvlskvortsov@sberbank.ru")
                                 .name("Denis Skvortsov")
                         )
                 );
+    }
+
+    //Micrometer
+
+    @Bean
+    public CountedAspect countedAspect(MeterRegistry registry){
+        return new CountedAspect(registry);
+    }
+
+    @Bean
+    public TimedAspect timedAspect(MeterRegistry registry) {
+        return new TimedAspect(registry);
     }
 
 

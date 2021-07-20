@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -34,12 +36,16 @@ public class RestaurantService {
         return mapList(restaurantRepository.findAll(), RestaurantDto.class, modelMapper);
     }
 
+    @Counted(value = "restaurant.add.count", description = "Счетчик добавлений ресторанов")
+    @Timed(value = "restaurant.add.time", description = "Время, затраченное на добавление ресторана")
     public RestaurantWithoutBondsDto create(RestaurantWithoutBondsDto restaurantWithoutBondsDto){
         log.info("create(RestaurantWithoutBondsDto restaurantWithoutBondsDto)");
         restaurantWithoutBondsDto.setId(null);
         return update(restaurantWithoutBondsDto);
     }
 
+    @Counted(value = "restaurant.upd.count", description = "Счетчик изменений ресторанов")
+    @Timed(value = "restaurant.upd.time", description = "Время, затраченное на изменение ресторана")
     public RestaurantWithoutBondsDto update(RestaurantWithoutBondsDto restaurantWithoutBondsDto){
         log.info("update(RestaurantWithoutBondsDto restaurantWithoutBondsDto)");
         return modelMapper.map(restaurantRepository.save(modelMapper.map(restaurantWithoutBondsDto, Restaurant.class)), RestaurantWithoutBondsDto.class);

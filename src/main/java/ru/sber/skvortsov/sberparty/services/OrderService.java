@@ -1,5 +1,7 @@
 package ru.sber.skvortsov.sberparty.services;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -11,6 +13,7 @@ import ru.sber.skvortsov.sberparty.entities.Order;
 import ru.sber.skvortsov.sberparty.exception.NotFoundException;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -44,7 +47,9 @@ public class OrderService {
         return mapList(orderRepository.findAll(), OrderDto.class, modelMapper);
     }
 
-
+    @Transactional
+    @Counted(value = "order.add.count", description = "Счетчик добавления заказов")
+    @Timed(value = "order.add.time", description = "Время, затраченное на формирование заказа")
     public OrderPostDto create(OrderPostDto orderPostDto) {
         log.info("create(OrderPostDto orderPostDto)");
         orderPostDto.setId(null);
